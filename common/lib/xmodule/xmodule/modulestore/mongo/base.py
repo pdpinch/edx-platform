@@ -478,7 +478,8 @@ class MongoModuleStore(ModuleStoreWriteBase):
                 existing_children = results_by_url[location_url].get('definition', {}).get('children', [])
                 additional_children = result.get('definition', {}).get('children', [])
                 total_children = existing_children + additional_children
-                results_by_url[location_url].setdefault('definition', {})['children'] = total_children
+                # use set to get rid of duplicates. We don't care about order; so, it shouldn't matter.
+                results_by_url[location_url].setdefault('definition', {})['children'] = set(total_children)
             else:
                 results_by_url[location_url] = result
             if location.category == 'course':
@@ -560,6 +561,7 @@ class MongoModuleStore(ModuleStoreWriteBase):
         If given a runtime, it replaces the cached_metadata in that runtime. NOTE: failure to provide
         a runtime may mean that some objects report old values for inherited data.
         """
+        course_id = course_id.for_branch(None)
         if course_id not in self.ignore_write_events_on_courses:
             # below is done for side effects when runtime is None
             cached_metadata = self._get_cached_metadata_inheritance_tree(course_id, force_refresh=True)
