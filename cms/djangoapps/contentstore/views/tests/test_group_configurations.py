@@ -17,7 +17,11 @@ class GroupConfigurationsCreateTestCase(CourseTestCase):
         self.url = reverse_course_url('group_configurations_list_handler', self.course.id)
         self.group_configuration_json = {
             u'description': u'Test description',
-            u'name': u'Test name'
+            u'name': u'Test name',
+            u'groups': [
+                {u'name': u'Group A'},
+                {u'name': u'Group B'},
+            ],
         }
 
     def test_index_page(self):
@@ -107,8 +111,8 @@ class GroupConfigurationsCreateTestCase(CourseTestCase):
             u'name': u'Test name',
             u'version': 1,
             u'groups': [
-                {u'id': 0, u'name': u'Group A', u'version': 1},
-                {u'id': 1, u'name': u'Group B', u'version': 1}
+                {u'name': u'Group A', u'version': 1},
+                {u'name': u'Group B', u'version': 1}
             ]
         }
         response = self.client.post(
@@ -122,6 +126,8 @@ class GroupConfigurationsCreateTestCase(CourseTestCase):
         self.assertIn("Location", response)
         group_configuration = json.loads(response.content)
         del group_configuration['id']  # do not check for id, it is unique
+        for group in group_configuration.get('groups', []):
+            del group['id']
         self.assertEqual(expected_group_configuration, group_configuration)
 
     def test_bad_group(self):
@@ -205,7 +211,11 @@ class GroupConfigurationsDetailTestCase(CourseTestCase):
 
         self.group_configuration_json = {
             u'description': u'Test description',
-            u'name': u'Test name'
+            u'name': u'Test name',
+            u'groups': [
+                {u'name': u'Group A'},
+                {u'name': u'Group B'},
+            ],
         }
 
         self.group_configuration = {
@@ -284,7 +294,7 @@ class GroupConfigurationsDetailTestCase(CourseTestCase):
             HTTP_X_REQUESTED_WITH="XMLHttpRequest",
         )
         content = json.loads(response.content)
-        self.assertEqual(content['id'], 1)
+        self.assertEqual(content['id'], u'1')
         self.assertEqual(content['description'], 'Edit Test description')
         self.assertEqual(content['name'], 'Edit Test name')
 
@@ -353,7 +363,7 @@ class GroupConfigurationsDetailTestCase(CourseTestCase):
             HTTP_X_REQUESTED_WITH="XMLHttpRequest",
         )
         content = json.loads(response.content)
-        self.assertEqual(content['id'], 1)
+        self.assertEqual(content['id'], u'1')
 
     def test_update_bad_group(self):
         """
