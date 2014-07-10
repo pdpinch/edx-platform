@@ -166,11 +166,11 @@ class CourseFixture(StudioApiFixture):
     between tests, you should use unique course identifiers for each fixture.
     """
 
-    def __init__(self, org, number, run, display_name, start_date=None, end_date=None):
+    def __init__(self, org, course, run, display_name, start_date=None, end_date=None):
         """
         Configure the course fixture to create a course with
 
-        `org`, `number`, `run`, and `display_name` (all unicode).
+        `org`, `course`, `run`, and `display_name` (all unicode).
 
         `start_date` and `end_date` are datetime objects indicating the course start and end date.
         The default is for the course to have started in the distant past, which is generally what
@@ -180,7 +180,7 @@ class CourseFixture(StudioApiFixture):
         """
         self._course_dict = {
             'org': org,
-            'number': number,
+            'course': course,
             'run': run,
             'display_name': display_name
         }
@@ -207,7 +207,7 @@ class CourseFixture(StudioApiFixture):
         """
         String representation of the course fixture, useful for debugging.
         """
-        return "<CourseFixture: org='{org}', number='{number}', run='{run}'>".format(**self._course_dict)
+        return "<CourseFixture: org='{org}', course='{course}', run='{run}'>".format(**self._course_dict)
 
     def add_children(self, *args):
         """
@@ -266,14 +266,14 @@ class CourseFixture(StudioApiFixture):
         """
         Return the locator string for the course.
         """
-        return "{org}/{number}/{run}".format(**self._course_dict)
+        return "{org}/{course}/{run}".format(**self._course_dict)
 
     @property
     def _course_location(self):
         """
         Return the locator string for the course.
         """
-        return "i4x://{org}/{number}/course/{run}".format(**self._course_dict)
+        return "i4x://{org}/{course}/course/{run}".format(**self._course_dict)
 
     @property
     def _assets_url(self):
@@ -287,7 +287,7 @@ class CourseFixture(StudioApiFixture):
         """
         Return the locator string for the course handouts
         """
-        return "i4x://{org}/{number}/course_info/handouts".format(**self._course_dict)
+        return "i4x://{org}/{course}/course_info/handouts".format(**self._course_dict)
 
     def _create_course(self):
         """
