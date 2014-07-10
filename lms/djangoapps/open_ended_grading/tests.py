@@ -444,8 +444,6 @@ class TestPanel(ModuleStoreTestCase):
     """
 
     def setUp(self):
-        super(TestPanel, self).setUp(create_user=False)
-
         # Toy courses should be loaded
         self.course_key = SlashSeparatedCourseKey('edX', 'open_ended', '2012_Fall')
         self.course = modulestore().get_course(self.course_key)
