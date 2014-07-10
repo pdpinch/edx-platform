@@ -1,6 +1,7 @@
 define(["jquery", "underscore", "gettext", "js/views/baseview", "js/views/utils/view_utils",
-        "js/views/utils/xblock_utils", "js/views/xblock_string_field_editor"],
-    function($, _, gettext, BaseView, ViewUtils, XBlockViewUtils, XBlockStringFieldEditor) {
+        "js/views/utils/xblock_utils", "js/views/xblock_string_field_editor",
+         "js/views/modals/edit_section_in_outline"],
+    function($, _, gettext, BaseView, ViewUtils, XBlockViewUtils, XBlockStringFieldEditor, EditSectionXBlockModal) {
 
         var XBlockOutlineView = BaseView.extend({
             // takes XBlockInfo as a model
@@ -186,13 +187,9 @@ define(["jquery", "underscore", "gettext", "js/views/baseview", "js/views/utils/
             },
 
             editXBlock: function() {
-                alert('Edited');
-                // var parentView = this.parentView;
-                // XBlockViewUtils.deleteXBlock(this.model).done(function() {
-                //     if (parentView) {
-                //         parentView.onChildDeleted();
-                //     }
-                // });
+                var modal;
+                modal = new EditSectionXBlockModal(this.model);
+                modal.show();
             },
 
             /**

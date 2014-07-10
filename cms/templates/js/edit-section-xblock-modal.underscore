@@ -1,0 +1,66 @@
+<div class="xblock-editor" data-locator="<%= xblockInfo.get('id') %>" data-course-key="<%= xblockInfo.get('courseKey') %>">
+   <% if (xblockInfo.get('category') === 'chapter') { %>
+        <p class="name"> Section Setting </p>
+        <p class="name"> Change the settings for this section </p>
+    <% } %>
+   <% if (xblockInfo.get('category') === 'sequential') { %>
+        <p class="name"> Subsection Setting </p>
+        <p class="name"> Change the current publishing status for this Subsection </p>
+    <% } %>
+
+    <div class="window-contents">
+      <div class="scheduled-date-input row">
+        <div class="datepair" data-language="javascript">
+          <div class="field field-start-date">
+            <label for="start_date"><%= gettext('Release Day') %></label>
+            <input type="text" id="start_date" name="start_date"
+                value="<%= xblockInfo.get('release_date') ? xblockInfo.get('release_date') : null %>"
+                placeholder="MM/DD/YYYY" class="date" size='15' autocomplete="off"/>
+          </div>
+          <div class="field field-start-time">
+            <label for="start_time"><%= gettext('Release Time') %> (<abbr title="<%= gettext('Coordinated Universal Time') %>"><%= gettext('UTC') %></abbr>)</label>
+            <input type="text" id="start_time" name="start_time"
+                value="<%= xblockInfo.get('release_date') ? xblockInfo.get('release_date') : null %>"
+                placeholder="HH:MM" class="time" size='10' autocomplete="off"/>
+          </div>
+        </div>
+      </div>
+
+
+
+
+    <% if (xblockInfo.get('category') === 'sequential') { %>
+        <div class="row gradable">
+            <label><%= gettext('Graded as:') %></label>
+
+            <div class="gradable-status" data-initial-status="<%= xblockInfo.get('grade_format')  ? xblockInfo.get('grade_format')  : 'notgraded' %>">
+        </div>
+        <div class="due-date-input row">
+            <a href="#" class="set-date"><%= gettext('Set a due date') %></a>
+            <div class="datepair date-setter">
+                <div class="field field-start-date">
+                    <label for="due_date"><%= gettext('Due Date') %></label>
+                    <input type="text" id="due_date" name="due_date"
+                    value="<%= xblockInfo.get('due_date')  ? xblockInfo.get('due_date')  : null %>"
+                    placeholder="MM/DD/YYYY" class="date" size='15' autocomplete="off"/>
+                </div>
+                <div class="field field-start-time">
+                        <label for="due_time"><%= gettext('Due Time in UTC') %> (<abbr title="<%=  gettext('Coordinated Universal Time') %>">UTC</abbr>)</label>
+                        <input type="text" id="due_time" name="due_time"
+                        value="<%= xblockInfo.get('due_date')  ? xblockInfo.get('due_date') : null %>"
+                        placeholder="HH:MM" class="time" size='10' autocomplete="off"/>
+                </div>
+                <a href="#" class="remove-date"><%= gettext('Remove due date') %></a>
+            </div>
+        </div>
+        <p class="name"> Grading </p>
+        <p class="name"> Grade as <span> <%= xblockInfo.get('grade_format') %> </span></p>
+        <p> <span>Due date:</span> <span> Due time in UTC: </span> </p>
+    <% } %>
+
+
+  </div>
+  </div>
+  </div>
+
+</div>
