@@ -447,6 +447,7 @@ class TestPanel(ModuleStoreTestCase):
         # Toy courses should be loaded
         self.course_key = SlashSeparatedCourseKey('edX', 'open_ended', '2012_Fall')
         self.course = modulestore().get_course(self.course_key)
+        assert self.course is not None
         self.user = factories.UserFactory()
 
     def test_open_ended_panel(self):
