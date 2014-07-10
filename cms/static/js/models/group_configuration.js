@@ -31,21 +31,31 @@ function(Backbone, _, str, gettext, GroupModel, GroupCollection) {
         },
 
         setOriginalAttributes: function() {
-            this._originalAttributes = this.toJSON();
+            this._originalAttributes = this.parse(this.toJSON());
         },
 
         reset: function() {
-            this.set(this._originalAttributes);
+            this.set(this._originalAttributes, { parse: true });
         },
 
         isDirty: function() {
             return !_.isEqual(
-                this._originalAttributes, this.toJSON()
+                this._originalAttributes, this.parse(this.toJSON())
             );
         },
 
         isEmpty: function() {
             return !this.get('name') && this.get('groups').isEmpty();
+        },
+
+        parse: function(response) {
+            var attrs = $.extend(true, {}, response);
+
+            _.each(attrs.groups, function(group, index) {
+                group.order = group.order || index;
+            });
+
+            return attrs;
         },
 
         toJSON: function() {

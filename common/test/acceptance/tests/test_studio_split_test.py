@@ -276,9 +276,10 @@ class GroupConfigurationsTest(UniqueCourseTest):
 
         if groups:
             allocation = int(math.floor(100 / len(groups)))
-            for index, group in enumerate(groups):
-                self.assertEqual(group, config.groups[index].name)
-                self.assertEqual(str(allocation) + "%", config.groups[index].allocation)
+            self.assertEqual(groups, [group.name for group in config.groups])
+            for group in config.groups:
+                self.assertEqual(str(allocation) + "%", group.allocation)
+
         # Collapse the configuration
         config.toggle()
 
@@ -342,10 +343,11 @@ class GroupConfigurationsTest(UniqueCourseTest):
         config = self.page.group_configurations()[0]
         config.name = "New Group Configuration Name"
         config.description = "New Description of the group configuration."
-        self.assertEqual(config.get_text('.action-primary'), "CREATE")
         # Add new group
         config.add_group()  # Group C
+
         # Save the configuration
+        self.assertEqual(config.get_text('.action-primary'), "CREATE")
         config.save()
 
         self._assert_fields(

@@ -26,11 +26,12 @@ function(BaseView, _, str, $, gettext) {
         render: function() {
             var collection = this.model.collection,
                 index = collection.indexOf(this.model),
-                defaultName = this.model.getDefaultName();
+                defaultName = collection.getDefaultGroupName(index);
 
             this.$el.html(this.template({
                 name: this.model.escape('name'),
-                defaultName: defaultName,
+                order: this.model.get('order'),
+                defaultName: _.escape(defaultName),
                 allocation: this.getAllocation(),
                 index: index,
                 error: this.model.validationError

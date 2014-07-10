@@ -943,7 +943,6 @@ class GroupConfiguration(object):
         for index, group in enumerate(group_configuration.get('groups', [])):
             if not group.get("id"):
                 group["id"] = (uuid.uuid1().int >> 65)
-                print(group["id"])
 
         return group_configuration
 

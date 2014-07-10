@@ -70,6 +70,13 @@ define([
                 });
 
                 return _.isEqual(actualValues, values);
+            },
+            toHaveCorrectPlaceholders: function (values) {
+                var actualValues = $.map(this.actual, function (item) {
+                    return $(item).attr('placeholder');
+                });
+
+                return _.isEqual(actualValues, values);
             }
         });
     });
@@ -305,7 +312,7 @@ define([
             });
         });
 
-        it('groups have correct default names', function () {
+        it('groups have correct default names and placeholders', function () {
             var group1 = new GroupModel({ name: 'Group A' }),
                 group2 = new GroupModel({ name: 'Group B' }),
                 collection = this.model.get('groups');
@@ -319,6 +326,10 @@ define([
                 .toHaveCorrectDefaultNames([
                     'Group A', 'Group B', 'Group C', 'Group D', 'Group E'
                 ]);
+            expect(this.view.$(SELECTORS.inputGroupName))
+                .toHaveCorrectPlaceholders([
+                    'Group A', 'Group B', 'Group C', 'Group D', 'Group E'
+                ]);
 
             // Remove Group B
             this.view.$('.group-1 .action-close').click();
@@ -327,7 +338,10 @@ define([
                 .toHaveCorrectDefaultNames([
                     'Group A', 'Group C', 'Group D', 'Group E'
                 ]);
-
+            expect(this.view.$(SELECTORS.inputGroupName))
+                .toHaveCorrectPlaceholders([
+                    'Group A', 'Group B', 'Group C', 'Group D'
+                ]);
 
             this.view.$('.action-add-group').click(); // Add Group F
             this.view.$('.action-add-group').click(); // Add Group G
@@ -336,6 +350,11 @@ define([
                 .toHaveCorrectDefaultNames([
                     'Group A', 'Group C', 'Group D', 'Group E', 'Group F',
                     'Group G'
+                ]);
+            expect(this.view.$(SELECTORS.inputGroupName))
+                .toHaveCorrectPlaceholders([
+                    'Group A', 'Group B', 'Group C', 'Group D', 'Group E',
+                    'Group F'
                 ]);
         });
     });

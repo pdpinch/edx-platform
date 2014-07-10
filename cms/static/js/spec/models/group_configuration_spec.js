@@ -73,8 +73,6 @@ define([
                     return deepAttributes(obj.attributes);
                 } else if (obj instanceof Backbone.Collection) {
                     return obj.map(deepAttributes);
-                } else if (_.isArray(obj)) {
-                    return _.map(obj, deepAttributes);
                 } else if (_.isObject(obj)) {
                     var attributes = {};
 
@@ -110,13 +108,15 @@ define([
                       'editing': false,
                       'groups': [
                         {
-                          'name': 'Group 1'
+                          'name': 'Group 1', 'order': 0
                         }, {
-                          'name': 'Group 2'
+                          'name': 'Group 2', 'order': 1
                         }
                       ]
                     },
-                    model = new GroupConfigurationModel(serverModelSpec);
+                    model = new GroupConfigurationModel(
+                        serverModelSpec, { parse: true }
+                    );
 
                 expect(deepAttributes(model)).toEqual(clientModelSpec);
                 expect(model.toJSON()).toEqual(serverModelSpec);
@@ -145,12 +145,12 @@ define([
         });
 
         describe('Basic', function() {
-            it('should have a name by default', function() {
-                expect(this.model.get('name')).toEqual('Group A');
+            it('should not have a name by default', function() {
+                expect(this.model.get('name')).toEqual(null);
             });
 
-            it('should not be empty by default', function() {
-                expect(this.model.isEmpty()).toBeFalsy();
+            it('should be empty by default', function() {
+                expect(this.model.isEmpty()).toBeTruthy();
             });
         });
 
@@ -198,86 +198,6 @@ define([
                 expect(model.isValid()).toBeFalsy();
             });
         });
-
-        describe('getGroupId', function () {
-            var model, injector, mockGettext, initializeGroupModel;
-
-            mockGettext = function (returnedValue) {
-                var injector = new Squire();
-
-                injector.mock('gettext', function () {
-                    return function () { return returnedValue; };
-                });
-
-                return injector;
-            };
-
-            initializeGroupModel = function (dict, that) {
-                runs(function() {
-                    injector = mockGettext(dict);
-                    injector.require(['js/models/group'], function(GroupModel) {
-                        var collection = new GroupCollection();
-                        model = new GroupModel();
-                        collection.reset([model]);
-                    });
-                });
-
-                waitsFor(function() {
-                    return model;
-                }, 'GroupModel was not instantiated', 500);
-
-                that.after(function () {
-                    model = null;
-                    injector.clean();
-                    injector.remove();
-                });
-            };
-
-            it('returns correct ids', function () {
-                var collection = new GroupCollection(),
-                    model = new GroupModel();
-
-                collection.reset([model]);
-                expect(model.getGroupId(0)).toBe('A');
-                expect(model.getGroupId(1)).toBe('B');
-                expect(model.getGroupId(25)).toBe('Z');
-                expect(model.getGroupId(702)).toBe('AAA');
-                expect(model.getGroupId(704)).toBe('AAC');
-                expect(model.getGroupId(475253)).toBe('ZZZZ');
-                expect(model.getGroupId(475254)).toBe('AAAAA');
-                expect(model.getGroupId(475279)).toBe('AAAAZ');
-            });
-
-            it('just 1 character in the dictionary', function () {
-                initializeGroupModel('1', this);
-                runs(function() {
-                    expect(model.getGroupId(0)).toBe('1');
-                    expect(model.getGroupId(1)).toBe('11');
-                    expect(model.getGroupId(5)).toBe('111111');
-                });
-            });
-
-            it('allow to use unicode characters in the dict', function () {
-                initializeGroupModel('ö诶úeœ', this);
-                runs(function() {
-                    expect(model.getGroupId(0)).toBe('ö');
-                    expect(model.getGroupId(1)).toBe('诶');
-                    expect(model.getGroupId(5)).toBe('öö');
-                    expect(model.getGroupId(29)).toBe('œœ');
-                    expect(model.getGroupId(30)).toBe('ööö');
-                    expect(model.getGroupId(43)).toBe('öúe');
-                });
-            });
-
-            it('return initial value if dictionary is empty', function () {
-                initializeGroupModel('', this);
-                runs(function() {
-                    expect(model.getGroupId(0)).toBe('0');
-                    expect(model.getGroupId(5)).toBe('5');
-                    expect(model.getGroupId(30)).toBe('30');
-                });
-            });
-        });
     });
 
     describe('GroupCollection', function() {
@@ -299,6 +219,83 @@ define([
             this.collection.add([{ name: '' }, { name: 'full' }, { name: '' } ]);
 
             expect(this.collection.isEmpty()).toBeFalsy();
+        });
+
+        describe('getGroupId', function () {
+            var collection, injector, mockGettext, initializeGroupModel;
+
+            mockGettext = function (returnedValue) {
+                var injector = new Squire();
+
+                injector.mock('gettext', function () {
+                    return function () { return returnedValue; };
+                });
+
+                return injector;
+            };
+
+            initializeGroupModel = function (dict, that) {
+                runs(function() {
+                    injector = mockGettext(dict);
+                    injector.require(['js/collections/group'],
+                    function(GroupCollection) {
+                        collection = new GroupCollection();
+                    });
+                });
+
+                waitsFor(function() {
+                    return collection;
+                }, 'GroupModel was not instantiated', 500);
+
+                that.after(function () {
+                    collection = null;
+                    injector.clean();
+                    injector.remove();
+                });
+            };
+
+            it('returns correct ids', function () {
+                var collection = new GroupCollection();
+
+                expect(collection.getGroupId(0)).toBe('A');
+                expect(collection.getGroupId(1)).toBe('B');
+                expect(collection.getGroupId(25)).toBe('Z');
+                expect(collection.getGroupId(702)).toBe('AAA');
+                expect(collection.getGroupId(704)).toBe('AAC');
+                expect(collection.getGroupId(475253)).toBe('ZZZZ');
+                expect(collection.getGroupId(475254)).toBe('AAAAA');
+                expect(collection.getGroupId(475279)).toBe('AAAAZ');
+            });
+
+            it('just 1 character in the dictionary', function () {
+                initializeGroupModel('1', this);
+                runs(function() {
+                    expect(collection.getGroupId(0)).toBe('1');
+                    expect(collection.getGroupId(1)).toBe('11');
+                    expect(collection.getGroupId(5)).toBe('111111');
+                });
+            });
+
+            it('allow to use unicode characters in the dict', function () {
+                initializeGroupModel('ö诶úeœ', this);
+                runs(function() {
+                    expect(collection.getGroupId(0)).toBe('ö');
+                    expect(collection.getGroupId(1)).toBe('诶');
+                    expect(collection.getGroupId(5)).toBe('öö');
+                    expect(collection.getGroupId(29)).toBe('œœ');
+                    expect(collection.getGroupId(30)).toBe('ööö');
+                    expect(collection.getGroupId(43)).toBe('öúe');
+                });
+            });
+
+            it('return initial value if dictionary is empty', function () {
+                initializeGroupModel('', this);
+                runs(function() {
+                    expect(collection.getGroupId(0)).toBe('0');
+                    expect(collection.getGroupId(5)).toBe('5');
+                    expect(collection.getGroupId(30)).toBe('30');
+                });
+            });
         });
     });
 });

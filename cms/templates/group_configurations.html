@@ -23,7 +23,7 @@
 require(["domReady!", "js/collections/group_configuration", "js/views/pages/group_configurations"],
 function(doc, GroupConfigurationCollection, GroupConfigurationsPage) {
   % if configurations is not None:
-    var collection = new GroupConfigurationCollection(${json.dumps(configurations)});
+    var collection = new GroupConfigurationCollection(${json.dumps(configurations)}, { parse: true });
 
     collection.url = "${group_configuration_url}";
     new GroupConfigurationsPage({
