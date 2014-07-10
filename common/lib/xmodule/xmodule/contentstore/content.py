@@ -111,9 +111,7 @@ class StaticContent(object):
         """
         Generate an AssetKey for the given path (old c4x/org/course/asset/name syntax)
         """
-        # TODO OpaqueKey - change to from_string once opaque keys lands
-        # return AssetLocation.from_string(path)
-        return AssetLocation.from_deprecated_string(path)
+        return AssetLocation.from_string(path)
 
     @staticmethod
     def convert_legacy_static_url_with_course_id(path, course_id):
