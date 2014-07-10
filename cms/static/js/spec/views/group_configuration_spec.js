@@ -125,11 +125,11 @@ define([
             this.view.$('.show-groups').click();
 
             expect(this.view.$(SELECTORS.usageCount)).not.toExist();
-            expect(this.view.$(SELECTORS.usageText)).toExist();
+            expect(this.view.$(SELECTORS.usageText))
                 .toContainText('This Group Configuration is not in use. ' +
                                'Start by adding a content experiment to any ' +
                                'Unit via the Course Outline.');
-            expect(this.view.$(SELECTORS.usageUnit).length).not.toExist();
+            expect(this.view.$(SELECTORS.usageUnit)).not.toExist();
         });
 
         it('should hide empty usage appropriately', function() {
