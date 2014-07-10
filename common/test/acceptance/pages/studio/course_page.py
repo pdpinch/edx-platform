@@ -15,18 +15,18 @@ class CoursePage(PageObject):
     # Does not need to include the leading forward or trailing slash
     url_path = ""
 
-    def __init__(self, browser, org, course, run):
+    def __init__(self, browser, course_org, course_num, course_run):
         """
         Initialize the page object for the course located at
-        `{org}.{course}.{run}`
+        `{course_org}.{course_num}.{course_run}`
 
         These identifiers will likely change in the future.
         """
         super(CoursePage, self).__init__(browser)
         self.course_info = {
-            'org': org,
-            'course': course,
-            'run': run
+            'course_org': course_org,
+            'course_num': course_num,
+            'course_run': course_run
         }
 
     @property
@@ -34,5 +34,5 @@ class CoursePage(PageObject):
         """
         Construct a URL to the page within the course.
         """
-        course_key = "{org}/{course}/{run}".format(**self.course_info)
+        course_key = "{course_org}/{course_num}/{course_run}".format(**self.course_info)
         return "/".join([BASE_URL, self.url_path, course_key])
