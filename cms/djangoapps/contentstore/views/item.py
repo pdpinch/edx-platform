@@ -633,7 +633,12 @@ def _create_xblock_ancestor_info(xblock):
         Collect xblock info regarding the specified xblock and its ancestors.
         """
         if ancestor:
-            ancestors.append(create_xblock_info(ancestor, include_child_info=include_child_info))
+            direct_children_only = lambda parent: parent == ancestor
+            ancestors.append(create_xblock_info(
+                ancestor,
+                include_child_info=include_child_info,
+                include_children_predicate=direct_children_only
+            ))
             collect_ancestor_info(get_parent_xblock(ancestor))
     collect_ancestor_info(get_parent_xblock(xblock), include_child_info=True)
     return {
