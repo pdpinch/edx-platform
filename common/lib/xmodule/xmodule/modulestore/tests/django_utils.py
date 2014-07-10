@@ -195,6 +195,8 @@ class ModuleStoreTestCase(TestCase):
         module_store = modulestore()
         if hasattr(module_store, '_drop_all_databases'):
             module_store._drop_all_databases()
+        elif hasattr(module_store, '_drop_database'):
+            module_store._drop_database()
 
         location_mapper = loc_mapper()
         if location_mapper.db:
