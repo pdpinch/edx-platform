@@ -107,10 +107,10 @@ Publish a Unit
 Hide a Unit from Students
 ********************************
 
-.. _Reorganize Units:
+.. _Reorganize the Outline:
 
 ********************************
-Reorganize Units
+Reorganize the Outline
 ********************************
 
 .. _Delete a Unit:
