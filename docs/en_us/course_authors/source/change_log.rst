@@ -13,6 +13,8 @@ July, 2014
 
    * - Date
      - Change
+   * - 07/11/14
+     - Added the :ref:`Discussions for Students and Staff` chapter.
    * - 07/10/14
      - Updated the :ref:`Discussions` chapter to add an
        :ref:`Overview_discussions` section and to reflect changes to the
