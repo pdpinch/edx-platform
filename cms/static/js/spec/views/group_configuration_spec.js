@@ -6,12 +6,12 @@ define([
     'js/views/group_configuration_item', 'js/models/group',
     'js/collections/group', 'js/views/group_edit',
     'js/views/feedback_notification', 'js/spec_helpers/create_sinon',
-    'js/spec_helpers/edit_helpers', 'squire', 'jasmine-stealth'
+    'js/spec_helpers/edit_helpers', 'jasmine-stealth'
 ], function(
     Course, GroupConfigurationModel, GroupConfigurationCollection,
     GroupConfigurationDetails, GroupConfigurationsList, GroupConfigurationEdit,
     GroupConfigurationItem, GroupModel, GroupCollection, GroupEdit,
-    Notification, create_sinon, view_helpers, Squire
+    Notification, create_sinon, view_helpers
 ) {
     'use strict';
     var SELECTORS = {
@@ -27,7 +27,7 @@ define([
         errorMessage: '.group-configuration-edit-error',
         inputGroupName: '.group-name',
         inputName: '.group-configuration-name-input',
-        inputDescription: '.group-configuration-description-input'
+        inputDescription: '.group-configuration-description-input',
     };
 
     beforeEach(function() {
@@ -63,6 +63,13 @@ define([
                 return _.every(values, function (value, key) {
                     return this.actual.get(key) === value;
                 }.bind(this));
+            },
+            toHaveCorrectDefaultNames: function (values) {
+                var actualValues = $.map(this.actual, function (item) {
+                    return $(item).val();
+                });
+
+                return _.isEqual(actualValues, values);
             }
         });
     });
@@ -100,7 +107,7 @@ define([
 
             expect(this.model.get('showGroups')).toBeTruthy();
             expect(this.view.$(SELECTORS.group).length).toBe(3);
-            expect(this.view.$(SELECTORS.groupsCount).get(0)).not.toExist();
+            expect(this.view.$(SELECTORS.groupsCount)).not.toExist();
             expect(this.view.$(SELECTORS.description))
                 .toContainText('Configuration Description');
             expect(this.view.$(SELECTORS.groupsAllocation))
@@ -113,12 +120,11 @@ define([
             this.view.$('.hide-groups').click();
 
             expect(this.model.get('showGroups')).toBeFalsy();
-            expect(this.view.$(SELECTORS.group).get(0)).not.toExist();
+            expect(this.view.$(SELECTORS.group)).not.toExist();
             expect(this.view.$(SELECTORS.groupsCount))
                 .toContainText('Contains 3 groups');
-            expect(this.view.$(SELECTORS.description).get(0)).not.toExist();
-            expect(this.view.$(SELECTORS.groupsAllocation).get(0))
-                .not.toExist();
+            expect(this.view.$(SELECTORS.description)).not.toExist();
+            expect(this.view.$(SELECTORS.groupsAllocation)).not.toExist();
         });
     });
 
@@ -158,11 +164,10 @@ define([
             });
         });
 
-        it ('should allow you to create new empty groups', function() {
+        it ('should allow you to create new groups', function() {
             var numGroups = this.model.get('groups').length;
             this.view.$('.action-add-group').click();
             expect(this.model.get('groups').length).toEqual(numGroups + 1);
-            expect(this.model.get('groups').last().isEmpty()).toBeTruthy();
         });
 
         it('should save properly', function() {
@@ -189,7 +194,7 @@ define([
             groups = this.model.get('groups');
             expect(groups.length).toBe(3);
             expect(groups.at(2).get('name')).toBe('Group C');
-            expect(this.view.$el.get(0)).not.toExist();
+            expect(this.view.$el).not.toExist();
         });
 
         it('does not hide saving message if failure', function() {
@@ -257,15 +262,15 @@ define([
                 name: 'New Configuration'
             });
             // Error message disappear
-            expect(this.view.$(SELECTORS.errorMessage).get(0)).not.toExist();
+            expect(this.view.$(SELECTORS.errorMessage)).not.toExist();
             expect(requests.length).toBe(1);
         });
 
         it('should have appropriate class names on focus/blur', function () {
             var element = this.view.$(SELECTORS.inputName),
-                parent = this.view.$('.add-group-configuration-name').get(0),
+                parent = this.view.$('.add-group-configuration-name'),
                 groupInput = this.view.$(SELECTORS.inputGroupName).first(),
-                groupFields = this.view.$(SELECTORS.groupFields).get(0);
+                groupFields = this.view.$(SELECTORS.groupFields);
 
             element.focus();
             expect(parent).toHaveClass('is-focused');
@@ -299,6 +304,40 @@ define([
                 expect(groups.length).toEqual(2);
             });
         });
+
+        it('groups have correct default names', function () {
+            var group1 = new GroupModel({ name: 'Group A' }),
+                group2 = new GroupModel({ name: 'Group B' }),
+                collection = this.model.get('groups');
+
+            collection.reset([group1, group2]); // Group A, Group B
+            this.view.$('.action-add-group').click(); // Add Group C
+            this.view.$('.action-add-group').click(); // Add Group D
+            this.view.$('.action-add-group').click(); // Add Group E
+
+            expect(this.view.$(SELECTORS.inputGroupName))
+                .toHaveCorrectDefaultNames([
+                    'Group A', 'Group B', 'Group C', 'Group D', 'Group E'
+                ]);
+
+            // Remove Group B
+            this.view.$('.group-1 .action-close').click();
+
+            expect(this.view.$(SELECTORS.inputGroupName))
+                .toHaveCorrectDefaultNames([
+                    'Group A', 'Group C', 'Group D', 'Group E'
+                ]);
+
+
+            this.view.$('.action-add-group').click(); // Add Group F
+            this.view.$('.action-add-group').click(); // Add Group G
+
+            expect(this.view.$(SELECTORS.inputGroupName))
+                .toHaveCorrectDefaultNames([
+                    'Group A', 'Group C', 'Group D', 'Group E', 'Group F',
+                    'Group G'
+                ]);
+        });
     });
 
     describe('GroupConfigurationsList', function() {
@@ -317,8 +356,8 @@ define([
                 expect(this.view.$el).toContainText(
                     'You haven\'t created any group configurations yet.'
                 );
-                expect(this.view.$('.new-button').get(0)).toExist();
-                expect(this.view.$(SELECTORS.itemView).get(0)).not.toExist();
+                expect(this.view.$('.new-button')).toExist();
+                expect(this.view.$(SELECTORS.itemView)).not.toExist();
             });
 
             it('should disappear if group configuration is added', function() {
@@ -326,10 +365,10 @@ define([
                     'configurations yet.';
 
                 expect(this.view.$el).toContainText(emptyMessage);
-                expect(this.view.$(SELECTORS.itemView).get(0)).not.toExist();
+                expect(this.view.$(SELECTORS.itemView)).not.toExist();
                 this.collection.add([{}]);
                 expect(this.view.$el).not.toContainText(emptyMessage);
-                expect(this.view.$(SELECTORS.itemView).get(0)).toExist();
+                expect(this.view.$(SELECTORS.itemView)).toExist();
             });
         });
     });
@@ -348,13 +387,13 @@ define([
 
         it('should render properly', function() {
             // Details view by default
-            expect(this.view.$(SELECTORS.detailsView).get(0)).toExist();
+            expect(this.view.$(SELECTORS.detailsView)).toExist();
             this.view.$('.action-edit .edit').click();
-            expect(this.view.$(SELECTORS.editView).get(0)).toExist();
-            expect(this.view.$(SELECTORS.detailsView).get(0)).not.toExist();
+            expect(this.view.$(SELECTORS.editView)).toExist();
+            expect(this.view.$(SELECTORS.detailsView)).not.toExist();
             this.view.$('.action-cancel').click();
-            expect(this.view.$(SELECTORS.detailsView).get(0)).toExist();
-            expect(this.view.$(SELECTORS.editView).get(0)).not.toExist();
+            expect(this.view.$(SELECTORS.detailsView)).toExist();
+            expect(this.view.$(SELECTORS.editView)).not.toExist();
         });
     });
 
@@ -383,83 +422,6 @@ define([
             it ('can delete itself', function() {
                 this.view.render().$('.action-close').click();
                 expect(this.collection.length).toEqual(0);
-            });
-        });
-
-        describe('getGroupId', function () {
-            var view, injector, mockGettext, initializeGroupEdit;
-
-            mockGettext = function (returnedValue) {
-                var injector = new Squire();
-
-                injector.mock('gettext', function () {
-                    return function () { return returnedValue; };
-                });
-
-                return injector;
-            };
-
-            initializeGroupEdit = function (dict, model, that) {
-                runs(function() {
-                    injector = mockGettext(dict);
-                    injector.require(['js/views/group_edit'],
-                    function(GroupEdit) {
-                        view = new GroupEdit({
-                            model: model
-                        });
-                    });
-                });
-
-                waitsFor(function() {
-                    return view;
-                }, 'GroupEdit was not instantiated', 500);
-
-                that.after(function () {
-                    view = null;
-                    injector.clean();
-                    injector.remove();
-                });
-            };
-
-            it('returns correct ids', function () {
-                expect(this.view.getGroupId(0)).toBe('A');
-                expect(this.view.getGroupId(1)).toBe('B');
-                expect(this.view.getGroupId(25)).toBe('Z');
-                expect(this.view.getGroupId(702)).toBe('AAA');
-                expect(this.view.getGroupId(704)).toBe('AAC');
-                expect(this.view.getGroupId(475253)).toBe('ZZZZ');
-                expect(this.view.getGroupId(475254)).toBe('AAAAA');
-                expect(this.view.getGroupId(475279)).toBe('AAAAZ');
-            });
-
-            it('just 1 character in the dictionary', function () {
-                initializeGroupEdit('1', this.model, this);
-                runs(function() {
-                    expect(view.getGroupId(0)).toBe('1');
-                    expect(view.getGroupId(1)).toBe('11');
-                    expect(view.getGroupId(5)).toBe('111111');
-                });
-            });
-
-            it('allow to use unicode characters in the dict', function () {
-                initializeGroupEdit('ö诶úeœ', this.model, this);
-                runs(function() {
-                    expect(view.getGroupId(0)).toBe('ö');
-                    expect(view.getGroupId(1)).toBe('诶');
-                    expect(view.getGroupId(5)).toBe('öö');
-                    expect(view.getGroupId(29)).toBe('œœ');
-                    expect(view.getGroupId(30)).toBe('ööö');
-                    expect(view.getGroupId(43)).toBe('öúe');
-                });
-            });
-
-            it('return initial value if dictionary is empty', function () {
-                initializeGroupEdit('', this.model, this);
-                runs(function() {
-                    expect(view.getGroupId(0)).toBe('0');
-                    expect(view.getGroupId(5)).toBe('5');
-                    expect(view.getGroupId(30)).toBe('30');
-                });
             });
         });
     });

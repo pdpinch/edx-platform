@@ -7,7 +7,7 @@ function(BaseView, _, str, $, gettext) {
     var GroupEdit = BaseView.extend({
         tagName: 'li',
         events: {
-            "click .action-close": "removeGroup",
+            'click .action-close': 'removeGroup',
             'change .group-name': 'changeName',
             'focus .groups-fields input': 'onFocus',
             'blur .groups-fields input': 'onBlur'
@@ -24,13 +24,15 @@ function(BaseView, _, str, $, gettext) {
         },
 
         render: function() {
-            var index = this.model.collection.indexOf(this.model);
+            var collection = this.model.collection,
+                index = collection.indexOf(this.model),
+                defaultName = this.model.getDefaultName();
 
             this.$el.html(this.template({
                 name: this.model.escape('name'),
+                defaultName: defaultName,
                 allocation: this.getAllocation(),
                 index: index,
-                groupId: this.getGroupId(index),
                 error: this.model.validationError
             }));
 
@@ -55,49 +57,6 @@ function(BaseView, _, str, $, gettext) {
         getAllocation: function() {
             return Math.floor(100 / this.model.collection.length);
         },
-
-        getGroupId: (function () {
-            /*
-                Translators: Dictionary used for creation ids for default group
-                names. For example: A, B, AA in Group A, Group B, ..., Group AA,
-                etc.
-            */
-            var dict = gettext('ABCDEFGHIJKLMNOPQRSTUVWXYZ').split(''),
-                len = dict.length;
-
-            var divide = function(numerator, denominator) {
-                if (denominator === 0) {
-                    return null;
-                }
-
-                return {
-                    quotient: numerator/denominator,
-                    remainder: numerator % denominator
-                };
-            };
-
-            return function getId(number) {
-                var id = '',
-                    result = divide(number, len),
-                    index;
-
-                if (result) {
-                    index = Math.floor(result.quotient - 1);
-
-                    if (index < len) {
-                      if (index > -1) {
-                        id += dict[index];
-                      }
-                    } else {
-                        id += getId(index);
-                    }
-
-                    return id + dict[result.remainder];
-                }
-
-                return String(number);
-            };
-        }()),
 
         onFocus: function () {
             this.$el.closest('.groups-fields').addClass('is-focused');

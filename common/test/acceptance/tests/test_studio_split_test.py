@@ -343,6 +343,8 @@ class GroupConfigurationsTest(UniqueCourseTest):
         config.name = "New Group Configuration Name"
         config.description = "New Description of the group configuration."
         self.assertEqual(config.get_text('.action-primary'), "CREATE")
+        # Add new group
+        config.add_group()  # Group C
         # Save the configuration
         config.save()
 
@@ -350,7 +352,7 @@ class GroupConfigurationsTest(UniqueCourseTest):
             config,
             name="New Group Configuration Name",
             description="New Description of the group configuration.",
-            groups=["Group A", "Group B"]
+            groups=["Group A", "Group B", "Group C"]
         )
 
         # Edit the group configuration
@@ -360,13 +362,18 @@ class GroupConfigurationsTest(UniqueCourseTest):
         config.name = "Second Group Configuration Name"
         config.description = "Second Description of the group configuration."
         self.assertEqual(config.get_text('.action-primary'), "SAVE")
+        # Add new group
+        config.add_group()  # Group D
+        # Remove Group B
+        config.groups[1].remove()
         # Save the configuration
         config.save()
 
         self._assert_fields(
             config,
             name="Second Group Configuration Name",
-            description="Second Description of the group configuration."
+            description="Second Description of the group configuration.",
+            groups=["Group A", "Group C", "Group D"]
         )
 
     def test_can_cancel_creation_of_group_configuration(self):
@@ -382,6 +389,8 @@ class GroupConfigurationsTest(UniqueCourseTest):
         config = self.page.group_configurations()[0]
         config.name = "Name of the Group Configuration"
         config.description = "Description of the group configuration."
+        # Add new group
+        config.add_group()  # Group C
         # Cancel the configuration
         config.cancel()
 
@@ -406,6 +415,9 @@ class GroupConfigurationsTest(UniqueCourseTest):
 
         config.name = "New Group Configuration Name"
         config.description = "New Description of the group configuration."
+        # Add 2 new groups
+        config.add_group()  # Group C
+        config.add_group()  # Group D
         # Cancel the configuration
         config.cancel()
 
@@ -420,24 +432,31 @@ class GroupConfigurationsTest(UniqueCourseTest):
         """
         Ensure that validation of the group configuration works correctly.
         """
-        self.page.visit()
+        def try_to_save_and_verify_error_message(message):
+             # Try to save
+            config.save()
+            # Verify that configuration is still in editing mode
+            self.assertEqual(config.mode, 'edit')
+            # Verify error message
+            self.assertEqual(message, config.validation_message)
 
+        self.page.visit()
         # Create new group configuration
         self.page.create()
         # Leave empty required field
         config = self.page.group_configurations()[0]
         config.description = "Description of the group configuration."
-        # Try to save
-        config.save()
-        # Verify that configuration is still in editing mode
-        self.assertEqual(config.mode, 'edit')
-        # Verify error message
-        self.assertEqual(
-            "Group Configuration name is required",
-            config.validation_message
-        )
+
+        try_to_save_and_verify_error_message("Group Configuration name is required")
+
         # Set required field
         config.name = "Name of the Group Configuration"
+        config.groups[1].name = ''
+        try_to_save_and_verify_error_message("All groups must have a name")
+        config.groups[1].remove()
+        try_to_save_and_verify_error_message("Please add at least two groups")
+        config.add_group()
+
         # Save the configuration
         config.save()
 

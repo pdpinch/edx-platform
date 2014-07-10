@@ -941,7 +941,9 @@ class GroupConfiguration(object):
         """
         # Assign ids to every group in configuration.
         for index, group in enumerate(group_configuration.get('groups', [])):
-            group["id"] = index
+            if not group.get("id"):
+                group["id"] = (uuid.uuid1().int >> 65)
+                print(group["id"])
 
         return group_configuration
 
