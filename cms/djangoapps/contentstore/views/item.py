@@ -575,12 +575,6 @@ def create_xblock_info(xblock, data=None, metadata=None, include_ancestor_info=F
     published = modulestore().has_item(xblock.location, revision=ModuleStoreEnum.RevisionOption.published_only)
     is_container = xblock.has_children
 
-    # TODO: remove this once the fake **replace_user** has been refactored away
-    try:
-        edited_by = User.objects.get(id=xblock.edited_by) if xblock.edited_by else None
-    except ValueError:
-        edited_by = None
-
     def safe_get_username(user_id):
         """
         Guard against bad user_ids, like the infamous "**replace_user**".

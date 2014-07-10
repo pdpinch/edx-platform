@@ -189,9 +189,10 @@ def add_section(name=None):
     assert_true(world.is_css_present('.outline-item-section .xblock-field-value'))
 
 
-def add_subsection(name='Subsection One'):
+def add_subsection(name=None):
     world.css_click('.outline-item-section .add-button')
-    set_element_value('.xblock-field-input', name, Keys.ENTER)
+    if name is not None:
+        set_element_value('.xblock-field-input', name, Keys.ENTER)
 
 
 def set_date_and_time(date_css, desired_date, time_css, desired_time, key=None):
