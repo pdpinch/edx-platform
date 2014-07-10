@@ -59,7 +59,7 @@ class MongoContentStore(ContentStore):
         Intended to be used by test code for cleanup.
         """
         self.close_connections()
-        self.fs_files.database.connection.drop_database(self.fs_files.database)
+        self.fs_files.drop()
 
     def save(self, content):
         content_id, content_son = self.asset_db_key(content.location)

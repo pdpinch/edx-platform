@@ -447,6 +447,7 @@ class TestPanel(ModuleStoreTestCase):
         # Toy courses should be loaded
         self.course_key = SlashSeparatedCourseKey('edX', 'open_ended', '2012_Fall')
         self.course = modulestore().get_course(self.course_key)
+        # NAATODO - remove this assert before Merge.
         assert self.course is not None
         self.user = factories.UserFactory()
 

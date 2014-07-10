@@ -72,6 +72,4 @@ def clear_courses():
     # (though it shouldn't), do this manually
     # from the bash shell to drop it:
     # $ mongo test_xmodule --eval "db.dropDatabase()"
-    store = modulestore()._get_modulestore_by_type(ModuleStoreEnum.Type.mongo)
-    store.collection.drop()
-    contentstore().fs_files.drop()
+    modulestore()._drop_all_databases()
