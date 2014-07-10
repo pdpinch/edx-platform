@@ -23,7 +23,11 @@ define([
         groupsAllocation: '.group-allocation',
         errorMessage: '.group-configuration-edit-error',
         inputName: '.group-configuration-name-input',
-        inputDescription: '.group-configuration-description-input'
+        inputDescription: '.group-configuration-description-input',
+        usageCount: 'group-configuration-usage-count',
+        usage: 'group-configuration-usage',
+        usageText: 'group-configuration-usage-text',
+        usageUnit: 'group-configuration-usage-unit'
     };
 
     beforeEach(function() {
@@ -114,6 +118,60 @@ define([
                 .toContainText('Contains 3 groups');
             expect(this.view.$(SELECTORS.description)).not.toExist();
             expect(this.view.$(SELECTORS.groupsAllocation)).not.toExist();
+        });
+
+        it('should show empty usage appropriately', function() {
+            this.model.set('showGroups', false);
+            this.view.$('.show-groups').click();
+
+            expect(this.view.$(SELECTORS.usageCount)).not.toExist();
+            expect(this.view.$(SELECTORS.usageText)).toExist();
+                .toContainText('This Group Configuration is not in use. ' +
+                               'Start by adding a content experiment to any ' +
+                               'Unit via the Course Outline.');
+            expect(this.view.$(SELECTORS.usageUnit).length).not.toExist();
+        });
+
+        it('should hide empty usage appropriately', function() {
+            this.model.set('showGroups', true);
+            this.view.$('.hide-groups').click();
+
+            expect(this.view.$(SELECTORS.usageText)).not.toExist();
+            expect(this.view.$(SELECTORS.usageUnit)).not.toExist();
+            expect(this.view.$(SELECTORS.usageCount))
+                .toContainText('Not in Use');
+        });
+
+        it('should show non-empty usage appropriately', function() {
+            this.model.set('usage',
+                [
+                    {'label': 'label1', 'url': 'url1'},
+                    {'label': 'label2', 'url': 'url2'}
+                ]
+            );
+            this.model.set('showGroups', false);
+            this.view.$('.show-groups').click();
+
+            expect(this.view.$(SELECTORS.usageCount)).not.toExist();
+            expect(this.view.$(SELECTORS.usageText))
+                .toContainText('Group configuration is used in:');
+            expect(this.view.$(SELECTORS.usageUnit).length).toBe(2);
+        });
+
+        it('should hide non-empty usage appropriately', function() {
+            this.model.set('usage',
+                [
+                    {'label': 'label1', 'url': 'url1'},
+                    {'label': 'label2', 'url': 'url2'}
+                ]
+            );
+            this.model.set('showGroups', true);
+            this.view.$('.hide-groups').click();
+
+            expect(this.view.$(SELECTORS.usageText)).not.toExist();
+            expect(this.view.$(SELECTORS.usageUnit)).not.toExist();
+            expect(this.view.$(SELECTORS.usageCount))
+                .toContainText('is used by 2 units');
         });
     });
 
