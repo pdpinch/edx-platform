@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from xmodule.modulestore.django import (
     modulestore, clear_existing_modulestores, loc_mapper
 )
+from xmodule.contentstore.django import _CONTENTSTORE
 from xmodule.modulestore import ModuleStoreEnum
 
 
@@ -217,6 +218,7 @@ class ModuleStoreTestCase(TestCase):
         Flush the ModuleStore after each test.
         """
         ModuleStoreTestCase.drop_mongo_collections()
+        _CONTENTSTORE.clear()
 
         # Call superclass implementation
         super(ModuleStoreTestCase, self)._post_teardown()
