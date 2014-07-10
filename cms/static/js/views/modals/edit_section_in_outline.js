@@ -22,24 +22,32 @@ define(["jquery", "underscore", "gettext", "js/views/modals/base_modal", "js/vie
                 this.events = _.extend({}, BaseModal.prototype.events, this.events);
                 this.template = this.loadTemplate('edit-section-xblock-modal');
                 this.xblockInfo = xblockInfo;
+                this.date = date;
+
+                // instrument as date and time pickers
+                // timefield.timepicker({'timeFormat' : 'H:i'});
+                // datefield.datepicker();
             },
 
 
-            // getDateTime: function(datetime) {
-            //     var date, time;
+            getDateTime: function(datetime) {
+                var formatted_date, formatted_time;
 
-            //     date = date.parse(datetime.split(' at ')[0]).toString('mm', 'dd', 'YY');
-            //     time = date.parse(datetime.split(' at ')[1].split('UTC')[0]).toString('hh', 'mm');
+                formatted_date = this.date.parse(datetime.split(' at ')[0]).toString('mm/dd/yy');
+                formatted_time = this.date.parse(datetime.split(' at ')[1].split('UTC')[0]).toString('hh:mm');
 
-            //     return date, time
-            // },
+                return {
+                    'date': formatted_date,
+                    'time': formatted_time,
+                }
+            },
 
 
             getContentHtml: function() {
-                debugger
                 return this.template({
                     xblockInfo: this.xblockInfo,
-                    // getDateTime: this.getDateTime,
+                    getDateTime: this.getDateTime,
+                    date: this.date,
                 });
             },
 
