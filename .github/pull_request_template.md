@@ -6,7 +6,7 @@ More details about the template are at https://github.com/edx/open-edx-proposals
 ## Description
 
 Describe what this pull request changes, and why. Include implications for people using this change.
-Design decisions should be documented in the repo (docstring / README / ADR) and linked here.
+Design decisions and their rationales should be be documented in the repo (docstring / ADR), per [OEP-19](https://open-edx-proposals.readthedocs.io/en/latest/oep-0019-bp-developer-documentation.html), and can be linked here.
 
 Useful information to include:
 - Which edX user roles will this change impact? Common user roles are "Learner", "Course Author",
